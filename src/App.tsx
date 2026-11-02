@@ -1,17 +1,28 @@
+import { useState } from 'react';
 import './App.css'
-import type { Transaction } from './Types';
+import type { Transaction } from './components/types';
 
-function App() {
+const STORAGE_KEY = "budget-transactions";
 
   // Remember to use . not , in numbers. Ex 10.50.
-  const transactions : Transaction[] = [
+  const initialTransactions : Transaction[] = [
     { id: 1, date: '2026-10-02', description: 'Vet', category: 'Health', amount: 180, type: 'expense' },
     { id: 2, date: '2026-15-02', description: 'Doctor', category: 'Health', amount: 107, type: 'expense' },
     { id: 3, date: '2026-10-03', description: 'Shoes', category: 'Clothes', amount: 150, type: 'expense' },
     
   ];
 
-  const listTransactions = transactions.map(t =>
+function App() {
+  const [transactions, setTransactions] = useState<Transaction[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return saved ? (JSON.parse(saved) as Transaction[]) : initialTransactions;
+    } catch {
+      return initialTransactions;
+    }
+  });
+
+  const listTransactions = initialTransactions.map(t =>
     <li key={t.id}>
       {t.date} - {t.description} ({t.category}): {t.amount} €, {t.type}
     </li>
